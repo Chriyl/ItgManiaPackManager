@@ -1,3 +1,5 @@
 <Solution>
+  <Project Path="ItgManiaManager.Models/ItgManiaManager.Models.csproj" Id="f4108a7c-88b6-4a8b-aa2c-200ad252dce5" />
+  <Project Path="ItgManiaManager.Service/ItgManiaManager.Service.csproj" Id="8498dc74-b6e0-4e8e-8336-e754f041342d" />
   <Project Path="ItgManiaManager/ItgManiaManager.csproj" />
 </Solution>

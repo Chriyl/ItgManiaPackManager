@@ -1,9 +1,13 @@
+using ItgManiaManager.Service;
+using ItgManiaManager.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+#nullable disable
 
 namespace ItgManiaManager
 {
@@ -13,6 +17,7 @@ namespace ItgManiaManager
         private MenuStrip menuStrip1;
         private ToolStrip toolStrip1;
         private StatusStrip statusStrip1;
+        IPackService _packService;
 
         private ToolStripStatusLabel statusLabel;
         private ToolStripStatusLabel statusPath;
@@ -30,18 +35,38 @@ namespace ItgManiaManager
         private TreeView Pacchi_tree;
 
         private Panel detailsPanel;
+
+        // ---- NEW layout helpers ----
+        private TableLayoutPanel detailsLayout;
+        private FlowLayoutPanel opsPanel;
+        private Panel optionsPanel;
+
         private Label lblTitolo;
         private TextBox txtDettagli;
+
+        private Label lblUniformDiff;
+        private ComboBox uniformDiffComboBox;
+
+        // ---- Example operation buttons ----
+        private Button btnOperazione1;
+        private Button btnOperazione2;
+        private Button btnOperazione3;
 
         // --- State ---
         private const int MaxRecenti = 10;
         private TreeNode _placeHolder;
-        private string? _currentRootPath;
+        private string _currentRootPath;
+        private EnumDifficulties _selectedDiff;
 
-        public MainWindow()
+        public MainWindow() : this(new PackService())
+        {
+        }
+
+        public MainWindow(IPackService packservice)
         {
             InitializeComponent();
 
+            _packService = packservice;
             AddPlaceholder();
             BuildRecentiMenu();
         }
@@ -67,11 +92,11 @@ namespace ItgManiaManager
         // -----------------------------
         // Drag & Drop (da Explorer)
         // -----------------------------
-        private void Pacchi_tree_DragEnter(object? sender, DragEventArgs e)
+        private void Pacchi_tree_DragEnter(object sender, DragEventArgs e)
         {
             if (e.Data != null && e.Data.GetDataPresent(DataFormats.FileDrop))
             {
-                var paths = (string[])e.Data.GetData(DataFormats.FileDrop)!;
+                var paths = (string[])e.Data.GetData(DataFormats.FileDrop);
                 if (paths.Any(Directory.Exists))
                 {
                     e.Effect = DragDropEffects.Copy;
@@ -81,11 +106,11 @@ namespace ItgManiaManager
             e.Effect = DragDropEffects.None;
         }
 
-        private void Pacchi_tree_DragDrop(object? sender, DragEventArgs e)
+        private void Pacchi_tree_DragDrop(object sender, DragEventArgs e)
         {
             if (e.Data == null) return;
 
-            var dropped = (string[])e.Data.GetData(DataFormats.FileDrop)!;
+            var dropped = (string[])e.Data.GetData(DataFormats.FileDrop);
             var folder = dropped.FirstOrDefault(Directory.Exists);
             if (folder == null) return;
 
@@ -95,17 +120,19 @@ namespace ItgManiaManager
         // -----------------------------
         // Tree selection -> Details
         // -----------------------------
-        private void Pacchi_tree_AfterSelect(object? sender, TreeViewEventArgs e)
+        private void Pacchi_tree_AfterSelect(object sender, TreeViewEventArgs e)
         {
             var fullPath = e.Node.Tag as string;
             if (string.IsNullOrWhiteSpace(fullPath))
             {
                 txtDettagli.Text = "";
                 statusPath.Text = "";
+                UpdateOpsEnabled(false);
                 return;
             }
 
             statusPath.Text = fullPath;
+            UpdateOpsEnabled(true);
 
             if (File.Exists(fullPath))
             {
@@ -208,6 +235,7 @@ namespace ItgManiaManager
         {
             var node = Pacchi_tree.SelectedNode;
             if (node == null) return;
+
             if (node.Parent == null)
             {
                 // root
@@ -216,6 +244,8 @@ namespace ItgManiaManager
                 txtDettagli.Text = "";
                 statusLabel.Text = "Vuoto";
                 statusPath.Text = "";
+                lblTitolo.Text = "Dettagli";
+                UpdateOpsEnabled(false);
                 return;
             }
 
@@ -227,9 +257,6 @@ namespace ItgManiaManager
         // -----------------------------
         private List<string> GetRecenti()
         {
-            // Usa Settings se esiste, altrimenti fallback in memoria.
-            // Per usarlo davvero: Project -> Properties -> Settings:
-            // Nome: RecentFolders  Tipo: System.Collections.Specialized.StringCollection  Scope: User
             var sc = Properties.Settings.Default.RecentFolders;
             if (sc == null) return new List<string>();
             return sc.Cast<string>().Where(Directory.Exists).ToList();
@@ -260,6 +287,12 @@ namespace ItgManiaManager
             SaveRecenti(list);
             BuildRecentiMenu();
         }
+
+        private void ApriCartellaToolStripMenuItem_Click(object sender, EventArgs e) => ApriCartella();
+        private void EsciToolStripMenuItem_Click(object sender, EventArgs e) => Close();
+        private void BtnApri_Click(object sender, EventArgs e) => ApriCartella();
+        private void BtnRefresh_Click(object sender, EventArgs e) => RefreshCorrente();
+        private void BtnRimuovi_Click(object sender, EventArgs e) => RimuoviSelezione();
 
         private void BuildRecentiMenu()
         {
@@ -292,106 +325,366 @@ namespace ItgManiaManager
         }
 
         // -----------------------------
+        // Operation buttons (example)
+        // -----------------------------
+        private void UpdateOpsEnabled(bool enabled)
+        {
+            btnOperazione1.Enabled = enabled;
+            btnOperazione2.Enabled = enabled;
+            btnOperazione3.Enabled = enabled;
+            uniformDiffComboBox.Enabled = enabled && !IsPlaceholderOnly();
+        }
+
+        private void BtnOperazione1_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("TODO: Operazione 1", "Operazione", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void BtnOperazione2_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("TODO: Operazione 2", "Operazione", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void BtnOperazione3_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("TODO: Operazione 3", "Operazione", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        // -----------------------------
         // InitializeComponent (Layout completo)
         // -----------------------------
         private void InitializeComponent()
         {
-            // Form
-            this.Text = "ItgManiaManager";
-            this.ClientSize = new Size(1200, 700);
-            this.StartPosition = FormStartPosition.CenterScreen;
-
-            // MenuStrip
             menuStrip1 = new MenuStrip();
-            fileToolStripMenuItem = new ToolStripMenuItem("File");
-            apriCartellaToolStripMenuItem = new ToolStripMenuItem("Apri cartella…");
-            recentiToolStripMenuItem = new ToolStripMenuItem("Recenti");
-            esciToolStripMenuItem = new ToolStripMenuItem("Esci");
-
-            apriCartellaToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.O;
-            esciToolStripMenuItem.ShortcutKeys = Keys.Alt | Keys.F4;
-
-            apriCartellaToolStripMenuItem.Click += (_, __) => ApriCartella();
-            esciToolStripMenuItem.Click += (_, __) => this.Close();
-
-            fileToolStripMenuItem.DropDownItems.Add(apriCartellaToolStripMenuItem);
-            fileToolStripMenuItem.DropDownItems.Add(recentiToolStripMenuItem);
-            fileToolStripMenuItem.DropDownItems.Add(new ToolStripSeparator());
-            fileToolStripMenuItem.DropDownItems.Add(esciToolStripMenuItem);
-
-            menuStrip1.Items.Add(fileToolStripMenuItem);
-            menuStrip1.Dock = DockStyle.Top;
-
-            // ToolStrip
+            fileToolStripMenuItem = new ToolStripMenuItem();
+            apriCartellaToolStripMenuItem = new ToolStripMenuItem();
+            recentiToolStripMenuItem = new ToolStripMenuItem();
+            esciToolStripMenuItem = new ToolStripMenuItem();
             toolStrip1 = new ToolStrip();
-            btnApri = new ToolStripButton("Apri");
-            btnRefresh = new ToolStripButton("Refresh");
-            btnRimuovi = new ToolStripButton("Rimuovi");
-
-            btnApri.Click += (_, __) => ApriCartella();
-            btnRefresh.Click += (_, __) => RefreshCorrente();
-            btnRimuovi.Click += (_, __) => RimuoviSelezione();
-
-            toolStrip1.Items.Add(btnApri);
-            toolStrip1.Items.Add(btnRefresh);
-            toolStrip1.Items.Add(new ToolStripSeparator());
-            toolStrip1.Items.Add(btnRimuovi);
-            toolStrip1.Dock = DockStyle.Top;
-
-            // StatusStrip
+            btnApri = new ToolStripButton();
+            btnRefresh = new ToolStripButton();
+            btnRimuovi = new ToolStripButton();
             statusStrip1 = new StatusStrip();
-            statusLabel = new ToolStripStatusLabel("Pronto");
-            statusPath = new ToolStripStatusLabel("") { Spring = true };
-            statusStrip1.Items.Add(statusLabel);
-            statusStrip1.Items.Add(statusPath);
-            statusStrip1.Dock = DockStyle.Bottom;
-
-            // SplitContainer
+            statusLabel = new ToolStripStatusLabel();
+            statusPath = new ToolStripStatusLabel();
             splitContainer1 = new SplitContainer();
-            splitContainer1.Dock = DockStyle.Fill;
-            splitContainer1.Orientation = Orientation.Vertical;
-            splitContainer1.SplitterDistance = 420;
-
-            // Left: TreeView
             Pacchi_tree = new TreeView();
-            Pacchi_tree.Dock = DockStyle.Fill;
-            Pacchi_tree.AllowDrop = true;
-            Pacchi_tree.HideSelection = false;
-            Pacchi_tree.AfterSelect += Pacchi_tree_AfterSelect;
-            Pacchi_tree.DragEnter += Pacchi_tree_DragEnter;
-            Pacchi_tree.DragDrop += Pacchi_tree_DragDrop;
-
-            splitContainer1.Panel1.Controls.Add(Pacchi_tree);
-
-            // Right: Details panel
             detailsPanel = new Panel();
-            detailsPanel.Dock = DockStyle.Fill;
-            detailsPanel.Padding = new Padding(10);
-
+            detailsLayout = new TableLayoutPanel();
             lblTitolo = new Label();
-            lblTitolo.Dock = DockStyle.Top;
-            lblTitolo.Text = "Dettagli";
-            lblTitolo.Font = new Font(this.Font.FontFamily, 12, FontStyle.Bold);
-            lblTitolo.Height = 32;
-
+            opsPanel = new FlowLayoutPanel();
+            btnOperazione1 = new Button();
+            btnOperazione2 = new Button();
+            btnOperazione3 = new Button();
+            optionsPanel = new Panel();
+            lblUniformDiff = new Label();
+            uniformDiffComboBox = new ComboBox();
             txtDettagli = new TextBox();
+            menuStrip1.SuspendLayout();
+            toolStrip1.SuspendLayout();
+            statusStrip1.SuspendLayout();
+            ((ISupportInitialize)splitContainer1).BeginInit();
+            splitContainer1.Panel2.SuspendLayout();
+            splitContainer1.SuspendLayout();
+            detailsPanel.SuspendLayout();
+            detailsLayout.SuspendLayout();
+            opsPanel.SuspendLayout();
+            optionsPanel.SuspendLayout();
+            SuspendLayout();
+            // 
+            // menuStrip1
+            // 
+            menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem });
+            menuStrip1.Location = new Point(0, 0);
+            menuStrip1.Name = "menuStrip1";
+            menuStrip1.Size = new Size(1529, 24);
+            menuStrip1.TabIndex = 2;
+            // 
+            // fileToolStripMenuItem
+            // 
+            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { apriCartellaToolStripMenuItem, recentiToolStripMenuItem, esciToolStripMenuItem });
+            fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            fileToolStripMenuItem.Size = new Size(37, 20);
+            fileToolStripMenuItem.Text = "File";
+            // 
+            // apriCartellaToolStripMenuItem
+            // 
+            apriCartellaToolStripMenuItem.Name = "apriCartellaToolStripMenuItem";
+            apriCartellaToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.O;
+            apriCartellaToolStripMenuItem.Size = new Size(189, 22);
+            apriCartellaToolStripMenuItem.Text = "Apri cartella…";
+            apriCartellaToolStripMenuItem.Click += ApriCartellaToolStripMenuItem_Click;
+            // 
+            // recentiToolStripMenuItem
+            // 
+            recentiToolStripMenuItem.Name = "recentiToolStripMenuItem";
+            recentiToolStripMenuItem.Size = new Size(189, 22);
+            recentiToolStripMenuItem.Text = "Recenti";
+            // 
+            // esciToolStripMenuItem
+            // 
+            esciToolStripMenuItem.Name = "esciToolStripMenuItem";
+            esciToolStripMenuItem.ShortcutKeys = Keys.Alt | Keys.F4;
+            esciToolStripMenuItem.Size = new Size(189, 22);
+            esciToolStripMenuItem.Text = "Esci";
+            esciToolStripMenuItem.Click += EsciToolStripMenuItem_Click;
+            // 
+            // toolStrip1
+            // 
+            toolStrip1.Items.AddRange(new ToolStripItem[] { btnApri, btnRefresh, btnRimuovi });
+            toolStrip1.Location = new Point(0, 24);
+            toolStrip1.Name = "toolStrip1";
+            toolStrip1.Size = new Size(1529, 25);
+            toolStrip1.TabIndex = 1;
+            // 
+            // btnApri
+            // 
+            btnApri.Name = "btnApri";
+            btnApri.Size = new Size(33, 22);
+            btnApri.Text = "Apri";
+            btnApri.Click += BtnApri_Click;
+            // 
+            // btnRefresh
+            // 
+            btnRefresh.Name = "btnRefresh";
+            btnRefresh.Size = new Size(50, 22);
+            btnRefresh.Text = "Refresh";
+            btnRefresh.Click += BtnRefresh_Click;
+            // 
+            // btnRimuovi
+            // 
+            btnRimuovi.Name = "btnRimuovi";
+            btnRimuovi.Size = new Size(55, 22);
+            btnRimuovi.Text = "Rimuovi";
+            btnRimuovi.Click += BtnRimuovi_Click;
+            // 
+            // statusStrip1
+            // 
+            statusStrip1.Items.AddRange(new ToolStripItem[] { statusLabel, statusPath });
+            statusStrip1.Location = new Point(0, 678);
+            statusStrip1.Name = "statusStrip1";
+            statusStrip1.Size = new Size(1529, 22);
+            statusStrip1.TabIndex = 3;
+            // 
+            // statusLabel
+            // 
+            statusLabel.Name = "statusLabel";
+            statusLabel.Size = new Size(43, 17);
+            statusLabel.Text = "Pronto";
+            // 
+            // statusPath
+            // 
+            statusPath.Name = "statusPath";
+            statusPath.Size = new Size(0, 17);
+            // 
+            // splitContainer1
+            // 
+            splitContainer1.Dock = DockStyle.Fill;
+            splitContainer1.Location = new Point(0, 49);
+            splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel2
+            // 
+            splitContainer1.Panel2.Controls.Add(Pacchi_tree);
+            splitContainer1.Panel2.Controls.Add(detailsPanel);
+            splitContainer1.Panel2MinSize = 260;
+            splitContainer1.Size = new Size(1529, 629);
+            splitContainer1.SplitterDistance = 36;
+            splitContainer1.SplitterWidth = 6;
+            splitContainer1.TabIndex = 0;
+            // 
+            // Pacchi_tree
+            // 
+            Pacchi_tree.AllowDrop = true;
+            Pacchi_tree.Anchor = AnchorStyles.Top;
+            Pacchi_tree.HideSelection = false;
+            Pacchi_tree.Location = new Point(-1, 0);
+            Pacchi_tree.Name = "Pacchi_tree";
+            Pacchi_tree.Size = new Size(765, 629);
+            Pacchi_tree.TabIndex = 0;
+            Pacchi_tree.AfterSelect += Pacchi_tree_AfterSelect;
+            Pacchi_tree.DragDrop += Pacchi_tree_DragDrop;
+            Pacchi_tree.DragEnter += Pacchi_tree_DragEnter;
+            // 
+            // detailsPanel
+            // 
+            detailsPanel.Anchor = AnchorStyles.Top;
+            detailsPanel.Controls.Add(detailsLayout);
+            detailsPanel.Location = new Point(770, 3);
+            detailsPanel.Name = "detailsPanel";
+            detailsPanel.Padding = new Padding(10);
+            detailsPanel.Size = new Size(683, 626);
+            detailsPanel.TabIndex = 0;
+            // 
+            // detailsLayout
+            // 
+            detailsLayout.ColumnCount = 1;
+            detailsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            detailsLayout.Controls.Add(lblTitolo, 0, 0);
+            detailsLayout.Controls.Add(opsPanel, 0, 1);
+            detailsLayout.Controls.Add(optionsPanel, 0, 2);
+            detailsLayout.Controls.Add(txtDettagli, 0, 3);
+            detailsLayout.Dock = DockStyle.Fill;
+            detailsLayout.Location = new Point(10, 10);
+            detailsLayout.Name = "detailsLayout";
+            detailsLayout.RowCount = 4;
+            detailsLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 36F));
+            detailsLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
+            detailsLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
+            detailsLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            detailsLayout.Size = new Size(663, 606);
+            detailsLayout.TabIndex = 0;
+            // 
+            // lblTitolo
+            // 
+            lblTitolo.Dock = DockStyle.Fill;
+            lblTitolo.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
+            lblTitolo.Location = new Point(3, 0);
+            lblTitolo.Name = "lblTitolo";
+            lblTitolo.Size = new Size(657, 36);
+            lblTitolo.TabIndex = 0;
+            lblTitolo.Text = "Dettagli";
+            lblTitolo.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // opsPanel
+            // 
+            opsPanel.AutoScroll = true;
+            opsPanel.Controls.Add(btnOperazione1);
+            opsPanel.Controls.Add(btnOperazione2);
+            opsPanel.Controls.Add(btnOperazione3);
+            opsPanel.Dock = DockStyle.Fill;
+            opsPanel.Location = new Point(0, 36);
+            opsPanel.Margin = new Padding(0);
+            opsPanel.Name = "opsPanel";
+            opsPanel.Size = new Size(663, 40);
+            opsPanel.TabIndex = 1;
+            opsPanel.WrapContents = false;
+            // 
+            // btnOperazione1
+            // 
+            btnOperazione1.AutoSize = true;
+            btnOperazione1.Location = new Point(3, 3);
+            btnOperazione1.Name = "btnOperazione1";
+            btnOperazione1.Size = new Size(86, 25);
+            btnOperazione1.TabIndex = 0;
+            btnOperazione1.Text = "Operazione 1";
+            btnOperazione1.Click += BtnOperazione1_Click;
+            // 
+            // btnOperazione2
+            // 
+            btnOperazione2.AutoSize = true;
+            btnOperazione2.Location = new Point(95, 3);
+            btnOperazione2.Name = "btnOperazione2";
+            btnOperazione2.Size = new Size(86, 25);
+            btnOperazione2.TabIndex = 1;
+            btnOperazione2.Text = "Operazione 2";
+            btnOperazione2.Click += BtnOperazione2_Click;
+            // 
+            // btnOperazione3
+            // 
+            btnOperazione3.AutoSize = true;
+            btnOperazione3.Location = new Point(187, 3);
+            btnOperazione3.Name = "btnOperazione3";
+            btnOperazione3.Size = new Size(86, 25);
+            btnOperazione3.TabIndex = 2;
+            btnOperazione3.Text = "Operazione 3";
+            btnOperazione3.Click += BtnOperazione3_Click;
+            // 
+            // optionsPanel
+            // 
+            optionsPanel.Controls.Add(lblUniformDiff);
+            optionsPanel.Controls.Add(uniformDiffComboBox);
+            optionsPanel.Dock = DockStyle.Fill;
+            optionsPanel.Location = new Point(3, 79);
+            optionsPanel.Name = "optionsPanel";
+            optionsPanel.Size = new Size(657, 34);
+            optionsPanel.TabIndex = 2;
+            // 
+            // lblUniformDiff
+            // 
+            lblUniformDiff.AutoSize = true;
+            lblUniformDiff.BorderStyle = BorderStyle.FixedSingle;
+            lblUniformDiff.Location = new Point(24, 9);
+            lblUniformDiff.Name = "lblUniformDiff";
+            lblUniformDiff.Size = new Size(112, 17);
+            lblUniformDiff.TabIndex = 0;
+            lblUniformDiff.Text = "Uniforma difficoltà:";
+            lblUniformDiff.Click += lblUniformDiff_Click;
+            // 
+            // uniformDiffComboBox
+            // 
+            uniformDiffComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            uniformDiffComboBox.Items.AddRange(new object[] { EnumDifficulties.Beginner, EnumDifficulties.Easy, EnumDifficulties.Medium, EnumDifficulties.Hard, EnumDifficulties.Challenge, EnumDifficulties.Edit });
+            uniformDiffComboBox.Location = new Point(140, 6);
+            uniformDiffComboBox.Name = "uniformDiffComboBox";
+            uniformDiffComboBox.Size = new Size(160, 23);
+            uniformDiffComboBox.TabIndex = 1;
+            uniformDiffComboBox.SelectionChangeCommitted += UniformDiffComboBox_SelectionChangeCommitted;
+            // 
+            // txtDettagli
+            // 
+            txtDettagli.BorderStyle = BorderStyle.None;
             txtDettagli.Dock = DockStyle.Fill;
+            txtDettagli.Location = new Point(3, 119);
             txtDettagli.Multiline = true;
+            txtDettagli.Name = "txtDettagli";
             txtDettagli.ReadOnly = true;
             txtDettagli.ScrollBars = ScrollBars.Vertical;
+            txtDettagli.Size = new Size(657, 484);
+            txtDettagli.TabIndex = 3;
+            // 
+            // MainWindow
+            // 
+            ClientSize = new Size(1529, 700);
+            Controls.Add(splitContainer1);
+            Controls.Add(toolStrip1);
+            Controls.Add(menuStrip1);
+            Controls.Add(statusStrip1);
+            MainMenuStrip = menuStrip1;
+            Name = "MainWindow";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "ItgManiaManager";
+            menuStrip1.ResumeLayout(false);
+            menuStrip1.PerformLayout();
+            toolStrip1.ResumeLayout(false);
+            toolStrip1.PerformLayout();
+            statusStrip1.ResumeLayout(false);
+            statusStrip1.PerformLayout();
+            splitContainer1.Panel2.ResumeLayout(false);
+            ((ISupportInitialize)splitContainer1).EndInit();
+            splitContainer1.ResumeLayout(false);
+            detailsPanel.ResumeLayout(false);
+            detailsLayout.ResumeLayout(false);
+            detailsLayout.PerformLayout();
+            opsPanel.ResumeLayout(false);
+            opsPanel.PerformLayout();
+            optionsPanel.ResumeLayout(false);
+            optionsPanel.PerformLayout();
+            ResumeLayout(false);
+            PerformLayout();
+            lblUniformDiff.Cursor = Cursors.Hand;
+        }
 
-            detailsPanel.Controls.Add(txtDettagli);
-            detailsPanel.Controls.Add(lblTitolo);
+        private void UniformDiffComboBox_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            if (uniformDiffComboBox.SelectedItem == null)
+                return;
 
-            splitContainer1.Panel2.Controls.Add(detailsPanel);
+            var selectedDifficulty = (EnumDifficulties)uniformDiffComboBox.SelectedItem;
+            _selectedDiff = selectedDifficulty;
+            MessageBox.Show($"Selezionata difficoltà: {selectedDifficulty}");
+        }
 
-            // Add controls to form (ordine conta!)
-            this.Controls.Add(splitContainer1);
-            this.Controls.Add(toolStrip1);
-            this.Controls.Add(menuStrip1);
-            this.Controls.Add(statusStrip1);
-
-            this.MainMenuStrip = menuStrip1;
+        private void lblUniformDiff_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                _packService.UniformDifficulty(_currentRootPath, _selectedDiff);
+            }catch(Exception exc)
+            {
+                MessageBox.Show(exc.Message, "errore", MessageBoxButtons.OK);
+            }
+           
         }
     }
 }
