@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <asmv1:assembly xsi:schemaLocation="urn:schemas-microsoft-com:asm.v1 assembly.adaptive.xsd" manifestVersion="1.0" xmlns:asmv1="urn:schemas-microsoft-com:asm.v1" xmlns="urn:schemas-microsoft-com:asm.v2" xmlns:asmv2="urn:schemas-microsoft-com:asm.v2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:co.v1="urn:schemas-microsoft-com:clickonce.v1" xmlns:asmv3="urn:schemas-microsoft-com:asm.v3" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" xmlns:co.v2="urn:schemas-microsoft-com:clickonce.v2">
-  <asmv1:assemblyIdentity name="ItgManiaManager.exe" version="0.0.0.12" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="msil" type="win32" />
+  <asmv1:assemblyIdentity name="ItgManiaManager.exe" version="0.0.0.13" publicKeyToken="7a53b82e8dc6b252" language="neutral" processorArchitecture="msil" type="win32" />
   <application />
   <entryPoint>
     <assemblyIdentity name="Launcher" version="8.0.0.0" language="neutral" processorArchitecture="msil" />
@@ -42,14 +42,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Launcher.exe" size="16384">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Launcher.exe" size="17360">
       <assemblyIdentity name="Launcher" version="8.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>VyDvvoUxAmOO/97Sw+2NgrJZPiExETS0pyxLL3cunqI=</dsig:DigestValue>
+        <dsig:DigestValue>U5qWsHW/T0YjW0fpuSEnOx6UIjwbwgYNjc4r6XooPtk=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -62,13 +62,13 @@
       <dsig:DigestValue>L1ld7BAfCc2R9MjDadIrr7URAlJ03y8gVhmV40kVMXs=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="ItgManiaManager.dll" size="22016">
+  <file name="ItgManiaManager.dll" size="22992">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>LbMoWge0INTzcK+4IfgC3zTgsGuTntglxIQ9miGd5UY=</dsig:DigestValue>
+      <dsig:DigestValue>x0OBODRZ2fPwWz5qfOGL7hql+pA2fPbnVDCtnVn4S9E=</dsig:DigestValue>
     </hash>
   </file>
   <file name="ItgManiaManager.dll.config" size="122">
@@ -80,13 +80,13 @@
       <dsig:DigestValue>xT8zpcOn36AF9ivJ2Bro1uXrAZRjvSmGwyygDOlATxo=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="ItgManiaManager.exe" size="161792">
+  <file name="ItgManiaManager.exe" size="162768">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>VWBuw+NRty/k6cf9k1hQEKMpBDDqoclsW6m8dTqZBe0=</dsig:DigestValue>
+      <dsig:DigestValue>Ny2sQyv61zfjbleig5W4ZCLaOLYUn/9l2DpNRg50XK0=</dsig:DigestValue>
     </hash>
   </file>
   <file name="ItgManiaManager.Models.dll" size="4096">
@@ -359,4 +359,4 @@
       <dsig:DigestValue>MC0fHMRYag+WAWNSWV7V/+7rGOmepjv1So1f4ETJZC4=</dsig:DigestValue>
     </hash>
   </file>
-</asmv1:assembly>
+<publisherIdentity name="CN=CRETIDUDA-PC\chris" issuerKeyHash="9973528868b6af796637a63e93a4ce75ea7761b3" /><Signature Id="StrongNameSignature" xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha256" /><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" /><Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" /><DigestValue>2/GtwvAVJ2FmGu1PfmfGaPEJ7uDu1QdhZQEPHpCw8gA=</DigestValue></Reference></SignedInfo><SignatureValue>Bk9NEWzenRQDKy4eRLN45NVaqbhuV9Ze8FAZvgAiCTHiNhfF8ZWhv70yo3lFfOekIAOvpYq/AvR/45KMvmrFLGQEKIE2xHHUc/XvW1ahZrezPyyNOo+IYG6Dr7JPnE8fgMoppcxLwIfTxY3X9amys24z7JrsOXFy+Ug3MJVbpck=</SignatureValue><KeyInfo Id="StrongNameKeyInfo"><KeyValue><RSAKeyValue><Modulus>59g7PLLxVwIgf6gZPEWi9C3ZBYMXxA7xax2mX88rArM8reEkIpKlFtt+ZWbfiiLjPtNnwRLb3ccw9M39RqVGE7Vy1R8p/vOz1l+g0TtIrCv70gyz2FQg5y23fOnp2HLRM9+KrKDEUgg6gE7tAs5uZxIRL1mkfAa/vO/HpQU/NvE=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue><msrel:RelData xmlns:msrel="http://schemas.microsoft.com/windows/rel/2005/reldata"><r:license xmlns:r="urn:mpeg:mpeg21:2003:01-REL-R-NS" xmlns:as="http://schemas.microsoft.com/windows/pki/2005/Authenticode"><r:grant><as:ManifestInformation Hash="00f2b0901e0f01656107d5eee0ee09f168c6677e4fed1a66612715f0c2adf1db" Description="" Url=""><as:assemblyIdentity name="ItgManiaManager.exe" version="0.0.0.13" publicKeyToken="7a53b82e8dc6b252" language="neutral" processorArchitecture="msil" type="win32" /></as:ManifestInformation><as:SignedBy /><as:AuthenticodePublisher><as:X509SubjectName>CN=CRETIDUDA-PC\chris</as:X509SubjectName></as:AuthenticodePublisher></r:grant><r:issuer><Signature Id="AuthenticodeSignature" xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha256" /><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" /><Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" /><DigestValue>DYhSzOahiyje+AYbienOAqzmmISL+V2aWnUzphQr/p4=</DigestValue></Reference></SignedInfo><SignatureValue>gxnhyeU0ZSr6PFjKKVlRlWkspxwOueLgehd+dnKyktt2BIfsEmp3LRuHW/KNhYwrsZHlMAeXFlNPihEDjeCGu5z1rZVT3MVJy9xFxG801Eq8rrh8ekInBL1LSQVIFpZzfpFKpnWkRAiU1j2npzBDiANn0t0wYCH1rWDDEzcEIaI=</SignatureValue><KeyInfo><KeyValue><RSAKeyValue><Modulus>59g7PLLxVwIgf6gZPEWi9C3ZBYMXxA7xax2mX88rArM8reEkIpKlFtt+ZWbfiiLjPtNnwRLb3ccw9M39RqVGE7Vy1R8p/vOz1l+g0TtIrCv70gyz2FQg5y23fOnp2HLRM9+KrKDEUgg6gE7tAs5uZxIRL1mkfAa/vO/HpQU/NvE=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue><X509Data><X509Certificate>MIIB4TCCAUqgAwIBAgIQKebDqasqlI5CxkKmKpnByzANBgkqhkiG9w0BAQsFADAvMS0wKwYDVQQDHiQAQwBSAEUAVABJAEQAVQBEAEEALQBQAEMAXABjAGgAcgBpAHMwHhcNMjYwMjI3MTgzNjMyWhcNMjcwMjI4MDAzNjMyWjAvMS0wKwYDVQQDHiQAQwBSAEUAVABJAEQAVQBEAEEALQBQAEMAXABjAGgAcgBpAHMwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAOfYOzyy8VcCIH+oGTxFovQt2QWDF8QO8Wsdpl/PKwKzPK3hJCKSpRbbfmVm34oi4z7TZ8ES293HMPTN/UalRhO1ctUfKf7zs9ZfoNE7SKwr+9IMs9hUIOctt3zp6dhy0TPfiqygxFIIOoBO7QLObmcSES9ZpHwGv7zvx6UFPzbxAgMBAAEwDQYJKoZIhvcNAQELBQADgYEAcHS7mbkqbiLc17halmsIKcINeAdEw++8NPUETXQNGdszapYJo/X9xoP7a40zlHr54VGzWxGa0p90GQ2jf4MUUYoafQjRcgvt5F3cvnAiNpYgOyxHCRJ0oLzQLH6Nv9UIifbJeUmIThkJT8eC+AvfD5XVXt2BcVgUcbd0hl0z42Q=</X509Certificate></X509Data></KeyInfo></Signature></r:issuer></r:license></msrel:RelData></KeyInfo></Signature></asmv1:assembly>
