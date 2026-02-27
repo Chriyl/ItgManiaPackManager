@@ -3,7 +3,7 @@ name: Deploy ClickOnce to GitHub Pages
 on:
   push:
     branches:
-      - main  # Modifica se il tuo branch principale è diverso
+      - deploy  # Modifica se il tuo branch principale è diverso
 
 jobs:
   deploy:
