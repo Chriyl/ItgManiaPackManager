@@ -1,0 +1,32 @@
+name: Deploy ClickOnce to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main  # Modifica se il tuo branch principale è diverso
+
+jobs:
+  deploy:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '4.8'  # ClickOnce su .NET Framework 4.8
+
+      - name: Build ClickOnce project
+        run: |
+          cd C:\Users\chris\source\repos\ItgManiaManager
+          msbuild ItgManiaManager.csproj /t:Publish /p:Configuration=Release /p:PublishDir=ClickOnce\
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v6
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./ClickOnce
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
