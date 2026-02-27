@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <asmv1:assembly xsi:schemaLocation="urn:schemas-microsoft-com:asm.v1 assembly.adaptive.xsd" manifestVersion="1.0" xmlns:asmv1="urn:schemas-microsoft-com:asm.v1" xmlns="urn:schemas-microsoft-com:asm.v2" xmlns:asmv2="urn:schemas-microsoft-com:asm.v2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:co.v1="urn:schemas-microsoft-com:clickonce.v1" xmlns:asmv3="urn:schemas-microsoft-com:asm.v3" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" xmlns:co.v2="urn:schemas-microsoft-com:clickonce.v2">
-  <asmv1:assemblyIdentity name="ItgManiaManager.exe" version="0.0.0.2" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="msil" type="win32" />
+  <asmv1:assemblyIdentity name="ItgManiaManager.exe" version="0.0.0.7" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="msil" type="win32" />
   <application />
   <entryPoint>
     <assemblyIdentity name="Launcher" version="8.0.0.0" language="neutral" processorArchitecture="msil" />
@@ -62,13 +62,13 @@
       <dsig:DigestValue>L1ld7BAfCc2R9MjDadIrr7URAlJ03y8gVhmV40kVMXs=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="ItgManiaManager.dll" size="22528">
+  <file name="ItgManiaManager.dll" size="22016">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>jFrBZ6opJRt5AsN++LVyBf3f2OGUKUJcH6UzpRR7qzU=</dsig:DigestValue>
+      <dsig:DigestValue>64PO2Jnma/MdiuHMw/RebPuI67uxdflwgnXgYSPqBm4=</dsig:DigestValue>
     </hash>
   </file>
   <file name="ItgManiaManager.dll.config" size="122">
@@ -80,13 +80,13 @@
       <dsig:DigestValue>xT8zpcOn36AF9ivJ2Bro1uXrAZRjvSmGwyygDOlATxo=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="ItgManiaManager.exe" size="162304">
+  <file name="ItgManiaManager.exe" size="161792">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>wOE56EwhqAYRZNUh8HCTm/6XoPTmpLpp3WirPwWq0oU=</dsig:DigestValue>
+      <dsig:DigestValue>D03OpEJStGaROHU9dDadh4b+To1tUiJLXaPIOYf3PUo=</dsig:DigestValue>
     </hash>
   </file>
   <file name="ItgManiaManager.Models.dll" size="4096">
