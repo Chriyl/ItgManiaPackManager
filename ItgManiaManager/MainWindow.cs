@@ -56,6 +56,11 @@ namespace ItgManiaManager
         private const int MaxRecenti = 10;
         private TreeNode _placeHolder;
         private string _currentRootPath;
+        private List<string> _bannerList = new List<string>();
+        private ComboBox ComboBannerSong;
+        private ComboBox ComboBannerPack;
+        private string _pathSelectedBannerPack;
+        private string _pathSelectedBannerSong;
         private EnumDifficulties _selectedDiff;
 
         public MainWindow() : this(new PackService())
@@ -65,7 +70,6 @@ namespace ItgManiaManager
         public MainWindow(IPackService packservice)
         {
             InitializeComponent();
-
             _packService = packservice;
             AddPlaceholder();
             BuildRecentiMenu();
@@ -355,6 +359,7 @@ namespace ItgManiaManager
         // -----------------------------
         private void InitializeComponent()
         {
+            _bannerList = Directory.GetFiles("Banner").ToList();
             menuStrip1 = new MenuStrip();
             fileToolStripMenuItem = new ToolStripMenuItem();
             apriCartellaToolStripMenuItem = new ToolStripMenuItem();
@@ -376,6 +381,8 @@ namespace ItgManiaManager
             btnOperazione1 = new Button();
             btnOperazione2 = new Button();
             btnOperazione3 = new Button();
+            ComboBannerSong = new ComboBox();
+            ComboBannerPack = new ComboBox();
             optionsPanel = new Panel();
             lblUniformDiff = new Label();
             uniformDiffComboBox = new ComboBox();
@@ -498,7 +505,7 @@ namespace ItgManiaManager
             Pacchi_tree.AllowDrop = true;
             Pacchi_tree.Anchor = AnchorStyles.Top;
             Pacchi_tree.HideSelection = false;
-            Pacchi_tree.Location = new Point(-1, 0);
+            Pacchi_tree.Location = new Point(-3, 0);
             Pacchi_tree.Name = "Pacchi_tree";
             Pacchi_tree.Size = new Size(765, 629);
             Pacchi_tree.TabIndex = 0;
@@ -510,7 +517,7 @@ namespace ItgManiaManager
             // 
             detailsPanel.Anchor = AnchorStyles.Top;
             detailsPanel.Controls.Add(detailsLayout);
-            detailsPanel.Location = new Point(770, 3);
+            detailsPanel.Location = new Point(768, 3);
             detailsPanel.Name = "detailsPanel";
             detailsPanel.Padding = new Padding(10);
             detailsPanel.Size = new Size(683, 626);
@@ -552,6 +559,8 @@ namespace ItgManiaManager
             opsPanel.Controls.Add(btnOperazione1);
             opsPanel.Controls.Add(btnOperazione2);
             opsPanel.Controls.Add(btnOperazione3);
+            opsPanel.Controls.Add(ComboBannerSong);
+            opsPanel.Controls.Add(ComboBannerPack);
             opsPanel.Dock = DockStyle.Fill;
             opsPanel.Location = new Point(0, 36);
             opsPanel.Margin = new Padding(0);
@@ -590,6 +599,29 @@ namespace ItgManiaManager
             btnOperazione3.Text = "Operazione 3";
             btnOperazione3.Click += BtnOperazione3_Click;
             // 
+            // comboBox1
+            // 
+            ComboBannerSong.DropDownStyle = ComboBoxStyle.DropDownList;
+            ComboBannerSong.Items.AddRange(new object[] { "Aggiungi il banner della canzone" });
+            ComboBannerSong.Items.AddRange( _bannerList.ToArray());
+            ComboBannerSong.Location = new Point(279, 3);
+            ComboBannerSong.Name = "comboBox1";
+            ComboBannerSong.Size = new Size(182, 23);
+            ComboBannerSong.TabIndex = 2;
+            ComboBannerSong.SelectedIndexChanged += ComboBannerSong_SelectedIndexChanged;
+            // 
+            // comboBox2
+            // 
+            ComboBannerPack.DropDownStyle = ComboBoxStyle.DropDownList;
+            ComboBannerPack.Items.AddRange(new object[] { "Aggiungi il banner del pack" });
+            ComboBannerPack.Items.AddRange(_bannerList.ToArray());
+            ComboBannerPack.Location = new Point(467, 3);
+            ComboBannerPack.Name = "comboBox2";
+            ComboBannerPack.Size = new Size(190, 23);
+            ComboBannerPack.TabIndex = 3;
+            ComboBannerPack.SelectedIndexChanged += ComboBannerPack_SelectedIndexChanged;
+
+            // 
             // optionsPanel
             // 
             optionsPanel.Controls.Add(lblUniformDiff);
@@ -604,6 +636,7 @@ namespace ItgManiaManager
             // 
             lblUniformDiff.AutoSize = true;
             lblUniformDiff.BorderStyle = BorderStyle.FixedSingle;
+            lblUniformDiff.Cursor = Cursors.Hand;
             lblUniformDiff.Location = new Point(24, 9);
             lblUniformDiff.Name = "lblUniformDiff";
             lblUniformDiff.Size = new Size(112, 17);
@@ -662,7 +695,6 @@ namespace ItgManiaManager
             optionsPanel.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
-            lblUniformDiff.Cursor = Cursors.Hand;
         }
 
         private void UniformDiffComboBox_SelectionChangeCommitted(object sender, EventArgs e)
@@ -679,12 +711,43 @@ namespace ItgManiaManager
         {
             try
             {
+                // Mostra la rotellina
+                Cursor.Current = Cursors.WaitCursor;
+
+                // Esegui l’operazione
                 _packService.UniformDifficulty(_currentRootPath, _selectedDiff);
-            }catch(Exception exc)
-            {
-                MessageBox.Show(exc.Message, "errore", MessageBoxButtons.OK);
             }
-           
+            catch (Exception exc)
+            {
+                MessageBox.Show(exc.Message, "Errore", MessageBoxButtons.OK);
+            }
+            finally
+            {
+                // Torna al cursore normale
+                Cursor.Current = Cursors.Default;
+                MessageBox.Show($"Difficolta impostat a {_selectedDiff}", "Successo", MessageBoxButtons.OK);
+
+            }
+        }
+
+        private void ComboBannerSong_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (ComboBannerSong.SelectedItem == null)
+                return;
+
+            var songBanner = ComboBannerSong.SelectedItem;
+            _pathSelectedBannerSong= (string)songBanner;
+            MessageBox.Show($"Banner della song selezionato:  {songBanner}");
+        }
+
+        private void ComboBannerPack_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (ComboBannerPack.SelectedItem == null)
+                return;
+
+            var songBanner = ComboBannerSong.SelectedItem;
+            _pathSelectedBannerPack = (string)songBanner;
+            MessageBox.Show($"Banner del pack selezionato:  {songBanner}");
         }
     }
 }
